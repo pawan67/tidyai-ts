@@ -1,0 +1,10 @@
+# Ignore standalone executables
+tidyai-win.exe
+tidyai-linux
+tidyai-macos
+
+# Ignore other build artifacts
+.tidyai/
+
+# Ignore documentation files
+/doc
