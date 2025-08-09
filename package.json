@@ -1,6 +1,6 @@
 {
   "name": "tidyai-ts",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "AI-powered cross-platform file organizer using OpenRouter API",
   "main": "dist/index.js",
   "bin": {
