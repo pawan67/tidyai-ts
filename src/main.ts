@@ -21,7 +21,7 @@ function showHelp() {
   console.log('Environment Variables:');
   console.log('  TIDYAI_API_KEY  OpenRouter API key for AI-powered suggestions');
   console.log('');
-  console.log('For more information, visit: https://github.com/yourusername/tidyai-ts');
+  console.log('For more information, visit: https://github.com/pawan67/tidyai-ts');
 }
 
 function showVersion() {
