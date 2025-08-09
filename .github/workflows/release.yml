@@ -5,26 +5,32 @@ on:
     tags:
       - 'v*'
 
+permissions:
+  contents: write # required to create releases
+
 jobs:
   create-release:
     runs-on: ubuntu-latest
+    outputs:
+      release_id: ${{ steps.create_release.outputs.release_id }}
     steps:
-    - name: Create Release
-      uses: actions/github-script@v6
-      with:
-        script: |
-          const { repo: { owner, repo }, ref } = context;
-          const tag = ref.replace('refs/tags/', '');
-          const release = await github.rest.repos.createRelease({
-            owner,
-            repo,
-            tag_name: tag,
-            name: `Release ${tag}`,
-            draft: false,
-            prerelease: false
-          });
-          core.setOutput('upload_url', release.data.upload_url);
-      id: create_release
+      - name: Create Release
+        uses: actions/github-script@v6
+        id: create_release
+        with:
+          script: |
+            const { repo: { owner, repo }, ref } = context;
+            const tag = ref.replace('refs/tags/', '');
+            const release = await github.rest.repos.createRelease({
+              owner,
+              repo,
+              tag_name: tag,
+              name: `Release ${tag}`,
+              draft: false,
+              prerelease: false
+            });
+            core.setOutput('upload_url', release.data.upload_url);
+            core.setOutput('release_id', release.data.id); // <-- add this
 
   build-and-package:
     needs: create-release
@@ -35,65 +41,62 @@ jobs:
         node-version: [18.x]
 
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
 
-    - name: Install dependencies
-      run: npm ci
+      - name: Install dependencies
+        run: npm ci
 
-    - name: Build project
-      run: npm run build
+      - name: Build project
+        run: npm run build
 
-    - name: Install pkg
-      run: npm install -g pkg
+      - name: Install pkg
+        run: npm install -g pkg
 
-    - name: Setup GitHub CLI
-      run: gh --version
+      - name: Package for Linux
+        if: matrix.os == 'ubuntu-latest'
+        run: pkg dist/index.js --targets node18-linux-x64 --output tidyai-linux
 
-    - name: Package for Linux
-      if: matrix.os == 'ubuntu-latest'
-      run: pkg dist/index.js --targets node18-linux-x64 --output tidyai-linux
+      - name: Package for Windows
+        if: matrix.os == 'windows-latest'
+        run: pkg dist/index.js --targets node18-win-x64 --output tidyai-win.exe
 
-    - name: Package for Windows
-      if: matrix.os == 'windows-latest'
-      run: pkg dist/index.js --targets node18-win-x64 --output tidyai-win.exe
+      - name: Package for macOS
+        if: matrix.os == 'macos-latest'
+        run: pkg dist/index.js --targets node18-mac-x64 --output tidyai-macos
 
-    - name: Package for macOS
-      if: matrix.os == 'macos-latest'
-      run: pkg dist/index.js --targets node18-mac-x64 --output tidyai-macos
+      - name: Upload release assets
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const fs = require('fs');
+            const { repo: { owner, repo }, ref } = context;
+            const tag = ref.replace('refs/tags/', '');
+            const releaseId = '${{ needs.create-release.outputs.release_id }}';
 
-    - name: Upload release assets
-      uses: actions/github-script@v6
-      with:
-        script: |
-          const fs = require('fs');
-          const { repo: { owner, repo }, ref } = context;
-          const tag = ref.replace('refs/tags/', '');
-          const releaseId = '${{ needs.create-release.outputs.release_id }}';
-          
-          let assetPath, assetName;
-          if (process.platform === 'linux') {
-            assetPath = './tidyai-linux';
-            assetName = 'tidyai-linux';
-          } else if (process.platform === 'win32') {
-            assetPath = './tidyai-win.exe';
-            assetName = 'tidyai-win.exe';
-          } else if (process.platform === 'darwin') {
-            assetPath = './tidyai-macos';
-            assetName = 'tidyai-macos';
-          }
+            let assetPath, assetName;
+            if (process.platform === 'linux') {
+              assetPath = './tidyai-linux';
+              assetName = 'tidyai-linux';
+            } else if (process.platform === 'win32') {
+              assetPath = './tidyai-win.exe';
+              assetName = 'tidyai-win.exe';
+            } else if (process.platform === 'darwin') {
+              assetPath = './tidyai-macos';
+              assetName = 'tidyai-macos';
+            }
 
-          if (assetPath && fs.existsSync(assetPath)) {
-            await github.rest.repos.uploadReleaseAsset({
-              owner,
-              repo,
-              release_id: releaseId,
-              name: assetName,
-              data: fs.readFileSync(assetPath)
-            });
-          }
+            if (assetPath && fs.existsSync(assetPath)) {
+              await github.rest.repos.uploadReleaseAsset({
+                owner,
+                repo,
+                release_id: releaseId,
+                name: assetName,
+                data: fs.readFileSync(assetPath)
+              });
+            }

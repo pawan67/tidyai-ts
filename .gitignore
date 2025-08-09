@@ -29,6 +29,10 @@ Thumbs.db
 *.exe
 *.out
 *.app
+*.bat
+tidyai-linux
+tidyai-macos
+
 
 # TidyAI specific
 .tidyai/
