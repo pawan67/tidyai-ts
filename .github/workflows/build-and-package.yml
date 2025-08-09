@@ -1,0 +1,105 @@
+name: Build and Package
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x]
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Build project
+      run: npm run build
+
+    - name: Run tests
+      run: npm test
+
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: tidyai-build
+        path: |
+          dist/
+          package.json
+          README.md
+          LICENSE
+
+  package:
+    needs: build
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        node-version: [18.x]
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Download build artifacts
+      uses: actions/download-artifact@v3
+      with:
+        name: tidyai-build
+        path: .
+
+    - name: Install pkg
+      run: npm install -g pkg
+
+    - name: Package for Linux
+      if: matrix.os == 'ubuntu-latest'
+      run: pkg dist/index.js --targets node18-linux-x64 --output tidyai-linux
+
+    - name: Package for Windows
+      if: matrix.os == 'windows-latest'
+      run: pkg dist/index.js --targets node18-win-x64 --output tidyai-win.exe
+
+    - name: Package for macOS
+      if: matrix.os == 'macos-latest'
+      run: pkg dist/index.js --targets node18-mac-x64 --output tidyai-macos
+
+    - name: Upload Linux package
+      if: matrix.os == 'ubuntu-latest'
+      uses: actions/upload-artifact@v3
+      with:
+        name: tidyai-linux
+        path: tidyai-linux
+
+    - name: Upload Windows package
+      if: matrix.os == 'windows-latest'
+      uses: actions/upload-artifact@v3
+      with:
+        name: tidyai-windows
+        path: tidyai-win.exe
+
+    - name: Upload macOS package
+      if: matrix.os == 'macos-latest'
+      uses: actions/upload-artifact@v3
+      with:
+        name: tidyai-macos
+        path: tidyai-macos

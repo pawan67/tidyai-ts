@@ -1,0 +1,90 @@
+# Dependencies
+node_modules/
+
+# Distribution files
+dist/
+
+# Log files
+*.log
+
+# Environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS generated files
+Thumbs.db
+.DS_Store
+.DS_Store?
+
+# Package lock files
+package-lock.json
+yarn.lock
+
+# Build artifacts
+*.exe
+*.out
+*.app
+
+# TidyAI specific
+.tidyai/
+
+# Temporary files
+*.tmp
+*.temp
+
+# Coverage reports
+coverage/
+
+# TypeScript cache
+*.tsbuildinfo
+
+# GitHub Actions artifacts
+.github/workflows/artifacts/
+
+# npm debug logs
+npm-debug.log*
+npm-error.log*
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Parcel cache
+.parcel-cache
+
+# Next.js
+.next/
+out/
+
+# Nuxt.js
+.nuxt/
+dist/
+
+# Vue CLI
+node_modules/
+dist/
+dist-ssr/
+*.local
+
+# Editor directories and files
+.atom/
+.build/
+.pydevproject
+.settings/
+.tm_properties
+*.sublime-project
+*.sublime-workspace
+
+# Documentation files
+/doc

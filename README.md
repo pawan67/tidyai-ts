@@ -40,9 +40,8 @@ npm install -g /path/to/tidyai-ts
 ```
 
 ### Option 4: Install from Git Repository
-If the code is hosted on a Git repository:
 ```bash
-npm install -g git+https://github.com/yourusername/tidyai-ts.git
+npm install -g git+https://github.com/pawan67/tidyai-ts.git
 ```
 
 ### Option 4: Run with npx

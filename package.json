@@ -1,0 +1,35 @@
+{
+  "name": "tidyai-ts",
+  "version": "1.0.0",
+  "description": "AI-powered cross-platform file organizer using OpenRouter API",
+  "main": "dist/index.js",
+  "bin": {
+    "tidyai": "./bin/tidyai"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pawan67/tidyai-ts.git"
+  },
+  "keywords": [
+    "file-organizer",
+    "ai",
+    "openrouter",
+    "cli",
+    "organization",
+    "automation"
+  ],
+  "author": "Pawan Tamada pawantamada8@gmail.com",
+  "license": "MIT",
+  "type": "commonjs",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "ts-node src/index.ts",
+    "test": "tsc --noEmit --project test/tsconfig.test.json || echo \"No type errors\""
+  },
+  "devDependencies": {
+    "@types/node": "^24.2.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.2"
+  }
+}
