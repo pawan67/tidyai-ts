@@ -3,9 +3,12 @@ import * as http from "http";
 import { URL } from "url";
 import { displayInfo, displayWarning, createLogEntry } from "./cli-utils";
 
-const OPENROUTER_API_KEY = process.env.TIDYAI_API_KEY;
+// Try to get API key from environment, with better error handling
+const OPENROUTER_API_KEY =
+  process.env.TIDYAI_API_KEY || process.env.OPENROUTER_API_KEY || "";
 const OPENROUTER_API_URL = "https://openrouter.ai/api/v1/chat/completions";
 const DEFAULT_MODEL = "openai/gpt-oss-20b:free";
+const IS_DEVELOPMENT = process.env.NODE_ENV === "development";
 
 interface ChatMessage {
   role: "user" | "assistant" | "system";
@@ -26,7 +29,7 @@ interface ChatCompletionResponse {
 }
 
 export class OpenRouterClient {
-  private apiKey: string | undefined;
+  private apiKey: string;
 
   constructor() {
     this.apiKey = OPENROUTER_API_KEY;
@@ -114,6 +117,20 @@ Example response format:
       const postData = JSON.stringify(data);
       const url = new URL(OPENROUTER_API_URL);
 
+      // Log request in development mode
+      if (IS_DEVELOPMENT) {
+        console.log("\n=== OPENROUTER API REQUEST ===");
+        console.log("URL:", OPENROUTER_API_URL);
+        console.log("Method: POST");
+        console.log("Headers:", {
+          "Authorization": "Bearer [REDACTED]",
+          "Content-Type": "application/json",
+          "Content-Length": Buffer.byteLength(postData),
+        });
+        console.log("Body:", JSON.stringify(data, null, 2));
+        console.log("===============================\n");
+      }
+
       const options = {
         hostname: url.hostname,
         port: 443,
@@ -135,6 +152,15 @@ Example response format:
 
         res.on("end", () => {
           try {
+            // Log response in development mode
+            if (IS_DEVELOPMENT) {
+              console.log("\n=== OPENROUTER API RESPONSE ===");
+              console.log("Status Code:", res.statusCode);
+              console.log("Headers:", res.headers);
+              console.log("Body:", responseBody);
+              console.log("================================\n");
+            }
+
             // Check if the response status indicates an error
             if (res.statusCode && res.statusCode >= 400) {
               displayWarning(
@@ -156,6 +182,12 @@ Example response format:
       });
 
       req.on("error", (error) => {
+        // Log error in development mode
+        if (IS_DEVELOPMENT) {
+          console.log("\n=== OPENROUTER API ERROR ===");
+          console.log("Error:", error);
+          console.log("============================\n");
+        }
         reject(error);
       });
 

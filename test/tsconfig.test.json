@@ -9,6 +9,6 @@
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true
   },
-  "include": ["test/**/*.ts"],
+  "include": ["build-verification.test.ts"],
   "exclude": ["node_modules"]
 }

@@ -1,12 +1,14 @@
 interface Arguments {
   path: string;
   undo: boolean;
+  delete: boolean;
 }
 
 export function parseArguments(args: string[]): Arguments {
   const parsed: Arguments = {
     path: '',
-    undo: false
+    undo: false,
+    delete: false
   };
 
   for (let i = 0; i < args.length; i++) {
@@ -19,6 +21,8 @@ export function parseArguments(args: string[]): Arguments {
     
     if (arg === '--undo') {
       parsed.undo = true;
+    } else if (arg === '--delete' || arg === '-d') {
+      parsed.delete = true;
     } else if (!arg.startsWith('-')) {
       parsed.path = arg;
     }

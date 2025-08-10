@@ -1,14 +1,50 @@
 # TidyAI-TS
 
+<p align="center">
+  <img src="https://img.shields.io/npm/v/tidyai-ts" alt="npm version">
+  <img src="https://img.shields.io/github/actions/workflow/status/pawan67/tidyai-ts/build-and-package.yml" alt="Build Status">
+  <img src="https://img.shields.io/npm/l/tidyai-ts" alt="License">
+  <img src="https://img.shields.io/github/languages/top/pawan67/tidyai-ts" alt="Language">
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/npm/dw/tidyai-ts" alt="Weekly Downloads">
+  <img src="https://img.shields.io/github/issues/pawan67/tidyai-ts" alt="Issues">
+  <img src="https://img.shields.io/github/stars/pawan67/tidyai-ts" alt="Stars">
+  <img src="https://img.shields.io/github/forks/pawan67/tidyai-ts" alt="Forks">
+</p>
+
+<p align="center">
+  <b>Organize your files with AI. Works everywhere. Powered by OpenRouter.</b>
+</p>
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/pawan67/tidyai-ts/main/doc/logo.png" alt="TidyAI Logo" width="200">
+</p>
+
+```
+████████╗██╗██████╗ ██╗   ██╗ █████╗ ██╗     
+╚══██╔══╝██║██╔══██╗╚██╗ ██╔╝██╔══██╗██║     
+   ██║   ██║██║  ██║ ╚████╔╝ ███████║██║     
+   ██║   ██║██║  ██║  ╚██╔╝  ██╔══██║██║     
+   ██║   ██║██████╔╝   ██║   ██║  ██║██║     
+   ╚═╝   ╚═╝╚═════╝    ╚═╝   ╚═╝  ╚═╝╚═╝     
+                                             
+========================================
+  Organize your files with AI power!
+========================================
+```
+
 _Organize your files with AI. Works everywhere. Powered by OpenRouter._
 
 TidyAI-TS is a cross-platform CLI tool that uses AI to organize your messy folders. It leverages the OpenRouter API to analyze filenames and suggest logical folder structures, making file organization effortless and intelligent.
 
-## Features
+## 🌟 Features
 
 - AI-powered folder suggestions using OpenRouter API
 - Smart file sorting based on file extensions and AI classification
 - Undo system to revert changes
+- Delete unnecessary files (thumbs.db, .DS_Store, *.tmp, *.log, desktop.ini)
 - Cross-platform CLI (Windows, macOS, Linux)
 - Secure and private - only sends filenames to the AI, never file contents
 - Robust error handling with fallback to default suggestions
@@ -17,7 +53,8 @@ TidyAI-TS is a cross-platform CLI tool that uses AI to organize your messy folde
 - Automatic logging of operations with timestamps
 - GitHub Actions for CI/CD and automatic releases
 
-## Installation
+## 📦 Installation
+
 
 ### Option 1: Download Standalone Executables (Recommended)
 
@@ -31,10 +68,14 @@ These executables can be run directly without needing to install Node.js.
 
 ### Option 2: Install from npm (Recommended for library usage)
 
-If you want to use TidyAI-TS as a library in your project:
-
 ```bash
 npm install tidyai-ts
+```
+
+Or install globally:
+
+```bash
+npm install -g tidyai-ts
 ```
 
 ### Option 3: Install from Local Directory
@@ -51,46 +92,73 @@ npm install -g /path/to/tidyai-ts
 npm install -g git+https://github.com/pawan67/tidyai-ts.git
 ```
 
-### Option 4: Run with npx
+### Option 5: Run with npx
 
 Run directly from the local directory without installing:
 
 ```bash
-npx /path/to/tidyai-ts
+npx . /path/to/folder
 ```
 
-## Setup
+## ⚙️ Setup
 
 1. Get an API key from [OpenRouter](https://openrouter.ai/keys)
-2. Set the API key as an environment variable:
+2. Set the API key as an environment variable (choose one method):
 
-```bash
-export TIDYAI_API_KEY=your_openrouter_api_key
+### Method 1: Permanent Environment Variable (Recommended)
+
+**Windows (PowerShell):**
+```powershell
+# Set for current user (permanent)
+[Environment]::SetEnvironmentVariable("TIDYAI_API_KEY", "your_openrouter_api_key", "User")
 ```
 
-On Windows (Command Prompt):
+**Windows (Command Prompt as Administrator):**
+```cmd
+setx TIDYAI_API_KEY "your_openrouter_api_key"
+```
 
+**macOS/Linux:**
+```bash
+# Add to your shell profile (~/.bashrc, ~/.zshrc, etc.)
+echo 'export TIDYAI_API_KEY=your_openrouter_api_key' >> ~/.bashrc
+source ~/.bashrc
+```
+
+### Method 2: Temporary Environment Variable
+
+**Windows (Command Prompt):**
 ```cmd
 set TIDYAI_API_KEY=your_openrouter_api_key
 tidyai-win.exe C:\path\to\your\folder
 ```
 
-On Windows (PowerShell):
-
+**Windows (PowerShell):**
 ```powershell
 $env:TIDYAI_API_KEY="your_openrouter_api_key"
 .\tidyai-win.exe C:\path\to\your\folder
 ```
 
-On macOS/Linux:
-
+**macOS/Linux:**
 ```bash
 export TIDYAI_API_KEY=your_openrouter_api_key
 ./tidyai-macos /path/to/your/folder  # macOS
 ./tidyai-linux /path/to/your/folder  # Linux
 ```
 
-## Usage
+### Method 3: Using the Provided Scripts
+
+Edit the `tidyai.bat` (Windows) or `tidyai.ps1` (PowerShell) file and uncomment the line with your API key:
+```batch
+set TIDYAI_API_KEY=your_actual_api_key_here
+```
+
+Then run:
+```cmd
+tidyai.bat C:\path\to\your\folder
+```
+
+## 🚀 Usage
 
 ### Basic Commands
 
@@ -98,6 +166,7 @@ export TIDYAI_API_KEY=your_openrouter_api_key
 tidyai --help                   # Show help information
 tidyai --version                # Show version information
 tidyai /path/to/folder          # Organize files in a folder
+tidyai --delete /path/to/folder # Organize and delete unnecessary files
 tidyai --undo /path/to/folder   # Undo organization
 ```
 
@@ -110,20 +179,61 @@ Usage:
   tidyai --version
 
 Options:
-  --undo     Undo the organization of a folder
-  --help     Show this help message
-  --version  Show version information
+  --undo, -u     Undo the organization of a folder
+  --delete, -d   Delete unnecessary files after organization
+  --help, -h     Show this help message
+  --version, -v  Show version information
 
 Examples:
   tidyai /path/to/folder          # Organize files in a folder
+  tidyai --delete /path/to/folder # Organize and delete unnecessary files
   tidyai --undo /path/to/folder   # Undo organization
   tidyai --help                   # Show this help message
+
+Notes:
+  - Unnecessary files include: thumbs.db, .DS_Store, *.tmp, *.log, desktop.ini
+  - Deletion requires confirmation and cannot be undone (files are permanently deleted)
+  - Organization history is used for undo operations
 
 Environment Variables:
   TIDYAI_API_KEY  OpenRouter API key for AI-powered suggestions
 ```
 
-## Beautiful CLI Interface
+### Example Usage
+
+Here's an example of how TidyAI organizes a messy folder:
+
+**Before:**
+```
+messy-folder/
+├── document.pdf
+├── photo.jpg
+├── script.js
+├── data.csv
+├── presentation.pptx
+└── video.mp4
+```
+
+**After running `tidyai messy-folder`:**
+```
+messy-folder/
+├── Documents/
+│   ├── document.pdf
+│   └── presentation.pptx
+├── Images/
+│   └── photo.jpg
+├── Scripts/
+│   └── script.js
+├── Data/
+│   └── data.csv
+├── Media/
+│   └── video.mp4
+└── .tidyai/
+    ├── history.json
+    └── logs/
+```
+
+### Beautiful CLI Interface
 
 TidyAI-TS features a beautiful CLI interface with:
 
@@ -133,13 +243,49 @@ TidyAI-TS features a beautiful CLI interface with:
 - Section headers for better organization
 - Timestamped log files in `.tidyai/logs/` directory
 
-## Error Handling
+Here's what the output looks like when organizing files:
+
+```
+████████╗██╗██████╗ ██╗   ██╗ █████╗ ██╗
+╚══██╔══╝██║██╔══██╗╚██╗ ██╔╝██╔══██╗██║
+   ██║   ██║██║  ██║ ╚████╔╝ ███████║██║
+   ██║   ██║██║  ██║  ╚██╔╝  ██╔══██║██║
+   ██║   ██║██████╔╝   ██║   ██║  ██║██║
+   ╚═╝   ╚═╝╚═════╝    ╚═╝   ╚═╝  ╚═╝╚═╝
+
+========================================
+  Organize your files with AI power!
+========================================
+
+
+┌──────────────────────┐
+│ Organization Process │
+└──────────────────────┘
+
+ℹ Scanning folder contents...
+ℹ Found 4 files to organize
+ℹ Getting folder suggestions from AI...
+ℹ Sending request to OpenRouter API...
+
+┌──────────────┐
+│ Moving Files │
+└──────────────┘
+
+Moving files: [████████████████████████████████████████] 100% (4/4) script.js
+✓ Moved 4 files into folders
+ℹ Saving organization history...
+✓ Organization complete!
+✓ Successfully organized folder: test-folder
+```
+
+## 🛡️ Error Handling
 
 TidyAI-TS includes robust error handling:
 
 - When the API key is not set or invalid, it falls back to default folder suggestions based on file extensions
 - API errors are properly caught and logged
 - The application continues to function even when the AI service is unavailable
+- Prompts user to continue with default suggestions when API key is missing
 
 If you're getting authentication errors, make sure you:
 
@@ -147,7 +293,7 @@ If you're getting authentication errors, make sure you:
 2. Are setting the environment variable correctly
 3. Are using the correct syntax for your operating system and shell
 
-## Development
+## 🧪 Development
 
 1. Clone the repository
 2. Install dependencies:
@@ -163,6 +309,51 @@ If you're getting authentication errors, make sure you:
    npm start -- /path/to/folder
    ```
 
-## License
+### Creating Standalone Executables
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+To create standalone executables for all platforms, you can use the packaging script:
+
+```bash
+npm run package
+```
+
+This will create the following executables:
+- Windows: `tidyai-win.exe`
+- macOS: `tidyai-macos`
+- Linux: `tidyai-linux`
+
+Alternatively, you can build individual platform executables using the npm scripts:
+```bash
+npm run build:win    # Windows executable
+npm run build:linux  # Linux executable
+npm run build:mac    # macOS executable
+npm run build:all    # All platforms
+```
+
+### Development Scripts
+
+- `npm run build` - Compile TypeScript to JavaScript
+- `npm run dev` - Run the TypeScript code directly
+- `npm start` - Run the compiled JavaScript
+- `npm test` - Run tests
+- `npm run package` - Create executables for all platforms
+- `npm run clean` - Remove generated executables
+- `npm run build:win` - Create Windows executable
+- `npm run build:linux` - Create Linux executable
+- `npm run build:mac` - Create macOS executable
+- `npm run build:all` - Create executables for all platforms
+
+## 📊 Badges
+
+[![npm version](https://img.shields.io/npm/v/tidyai-ts)](https://www.npmjs.com/package/tidyai-ts)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/pawan67/tidyai-ts/build-and-package.yml)](https://github.com/pawan67/tidyai-ts/actions)
+[![License](https://img.shields.io/npm/l/tidyai-ts)](LICENSE)
+[![Language](https://img.shields.io/github/languages/top/pawan67/tidyai-ts)](https://github.com/pawan67/tidyai-ts/search?l=typescript)
+[![Weekly Downloads](https://img.shields.io/npm/dw/tidyai-ts)](https://www.npmjs.com/package/tidyai-ts)
+[![Issues](https://img.shields.io/github/issues/pawan67/tidyai-ts)](https://github.com/pawan67/tidyai-ts/issues)
+[![Stars](https://img.shields.io/github/stars/pawan67/tidyai-ts)](https://github.com/pawan67/tidyai-ts/stargazers)
+[![Forks](https://img.shields.io/github/forks/pawan67/tidyai-ts)](https://github.com/pawan67/tidyai-ts/network/members)
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

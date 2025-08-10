@@ -1,8 +1,9 @@
 {
   "name": "tidyai-ts",
-  "version": "1.0.8",
+  "version": "1.1.0",
   "description": "AI-powered cross-platform file organizer using OpenRouter API",
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "bin": {
     "tidyai": "./bin/tidyai"
   },
@@ -25,11 +26,26 @@
     "build": "tsc",
     "start": "node dist/index.js",
     "dev": "ts-node src/index.ts",
-    "test": "tsc --noEmit --project test/tsconfig.test.json || echo \"No type errors\""
+    "test": "tsc --noEmit --project test/tsconfig.test.json && ts-node test/build-verification.test.ts",
+    "build:win": "pkg dist/index.js --targets node18-win-x64 --output tidyai-win.exe",
+    "build:linux": "pkg dist/index.js --targets node18-linux-x64 --output tidyai-linux",
+    "build:mac": "pkg dist/index.js --targets node18-mac-x64 --output tidyai-macos",
+    "build:all": "npm run build:win && npm run build:linux && npm run build:mac",
+    "package": "node script.js",
+    "clean": "rimraf tidyai-win.exe tidyai-linux tidyai-macos"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5"
   },
   "devDependencies": {
     "@types/node": "^24.2.1",
+    "pkg": "^5.8.1",
+    "rimraf": "^6.0.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.2"
+  },
+  "homepage": "https://github.com/pawan67/tidyai-ts.git#readme",
+  "bugs": {
+    "url": "https://github.com/pawan67/tidyai-ts.git/issues"
   }
 }

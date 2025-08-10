@@ -68,20 +68,17 @@ jobs:
         name: tidyai-build
         path: .
 
-    - name: Install pkg
-      run: npm install -g pkg
-
     - name: Package for Linux
       if: matrix.os == 'ubuntu-latest'
-      run: pkg dist/index.js --targets node18-linux-x64 --output tidyai-linux
+      run: npm run build:linux
 
     - name: Package for Windows
       if: matrix.os == 'windows-latest'
-      run: pkg dist/index.js --targets node18-win-x64 --output tidyai-win.exe
+      run: npm run build:win
 
     - name: Package for macOS
       if: matrix.os == 'macos-latest'
-      run: pkg dist/index.js --targets node18-mac-x64 --output tidyai-macos
+      run: npm run build:mac
 
     - name: Upload Linux package
       if: matrix.os == 'ubuntu-latest'

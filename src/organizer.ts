@@ -6,13 +6,16 @@ import {
   displayInfo, 
   displaySuccess, 
   displayError, 
+  displayWarning,
   displayProgressBar,
   createLogEntry,
   updateProgress,
   clearProgressLine
 } from './cli-utils';
+import * as readline from 'readline';
 
 const HISTORY_FILE = '.tidyai/history.json';
+const DELETE_HISTORY_FILE = '.tidyai/delete-history.json';
 
 export interface FileMove {
   fileName: string;
@@ -23,6 +26,25 @@ export interface FileMove {
 export interface OrganizationHistory {
   timestamp: string;
   moves: FileMove[];
+}
+
+export interface DeleteHistory {
+  timestamp: string;
+  deletedFiles: string[];
+}
+
+function promptUser(message: string): Promise<boolean> {
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
+  });
+
+  return new Promise((resolve) => {
+    rl.question(`${message} (y/N): `, (answer) => {
+      rl.close();
+      resolve(answer.toLowerCase() === 'y' || answer.toLowerCase() === 'yes');
+    });
+  });
 }
 
 export async function organizeFolder(folderPath: string) {
@@ -125,11 +147,142 @@ export async function organizeFolder(folderPath: string) {
   displaySuccess('Organization complete!');
 }
 
+export async function deleteUnnecessaryFiles(folderPath: string) {
+  displaySectionHeader('Delete Unnecessary Files');
+  
+  // First organize the folder
+  await organizeFolder(folderPath);
+  
+  // Find potentially unnecessary files
+  displayInfo('Scanning for unnecessary files...');
+  const unnecessaryFiles: string[] = [];
+  
+  // Walk through all subdirectories to find files
+  async function walkDir(dir: string) {
+    const files = await fs.readdir(dir);
+    for (const file of files) {
+      // Skip .tidyai directory
+      if (file === '.tidyai') continue;
+      
+      const filePath = path.join(dir, file);
+      const stat = await fs.stat(filePath);
+      
+      if (stat.isDirectory()) {
+        await walkDir(filePath);
+      } else {
+        // Check if file is potentially unnecessary
+        const fileName = path.basename(file).toLowerCase();
+        if (
+          fileName === 'thumbs.db' ||
+          fileName === '.ds_store' ||
+          fileName.endsWith('.tmp') ||
+          fileName.endsWith('.log') ||
+          fileName === 'desktop.ini'
+        ) {
+          unnecessaryFiles.push(filePath);
+        }
+      }
+    }
+  }
+  
+  await walkDir(folderPath);
+  
+  if (unnecessaryFiles.length === 0) {
+    displayInfo('No unnecessary files found.');
+    await createLogEntry(folderPath, 'No unnecessary files found during deletion process', '.tidyai/logs');
+    return;
+  }
+  
+  displayWarning(`Found ${unnecessaryFiles.length} potentially unnecessary files:`);
+  for (const file of unnecessaryFiles) {
+    console.log(`  - ${file}`);
+  }
+  
+  // Prompt user for confirmation
+  const confirmDelete = await promptUser('Are you sure you want to delete these files? This action cannot be undone without a backup.');
+  if (!confirmDelete) {
+    displayInfo('File deletion cancelled by user.');
+    await createLogEntry(folderPath, 'File deletion cancelled by user', '.tidyai/logs');
+    return;
+  }
+  
+  // Save delete history for potential undo
+  const deleteHistoryPath = path.join(folderPath, DELETE_HISTORY_FILE);
+  const deleteHistory: DeleteHistory = {
+    timestamp: new Date().toISOString(),
+    deletedFiles: []
+  };
+  
+  // Create delete history directory
+  const deleteHistoryDir = path.dirname(deleteHistoryPath);
+  await fs.mkdir(deleteHistoryDir, { recursive: true });
+  
+  // Delete files and save their paths for undo
+  displaySectionHeader('Deleting Files');
+  let deletedCount = 0;
+  const totalFiles = unnecessaryFiles.length;
+  
+  for (const filePath of unnecessaryFiles) {
+    try {
+      // Save file content for potential recovery
+      deleteHistory.deletedFiles.push(filePath);
+      
+      // Delete file
+      await fs.rm(filePath);
+      deletedCount++;
+      
+      // Update progress
+      const percentage = deletedCount / totalFiles;
+      const progressBar = displayProgressBar(percentage);
+      updateProgress(`Deleting files: [${progressBar}] ${Math.round(percentage * 100)}% (${deletedCount}/${totalFiles}) ${path.basename(filePath)}`);
+    } catch (error) {
+      displayWarning(`Failed to delete ${filePath}: ${(error as Error).message}`);
+    }
+  }
+  
+  // Clear the progress line and show completion
+  clearProgressLine();
+  
+  // Save delete history
+  await fs.writeFile(deleteHistoryPath, JSON.stringify(deleteHistory, null, 2));
+  
+  displaySuccess(`Deleted ${deletedCount} unnecessary files.`);
+  await createLogEntry(folderPath, `Deleted ${deletedCount} unnecessary files`, '.tidyai/logs');
+}
+
 export async function undoOrganize(folderPath: string) {
   displaySectionHeader('Undo Process');
   
   const historyPath = path.join(folderPath, HISTORY_FILE);
+  const deleteHistoryPath = path.join(folderPath, DELETE_HISTORY_FILE);
   
+  // Check if we have delete history to undo
+  let hasDeleteHistory = false;
+  try {
+    await fs.access(deleteHistoryPath);
+    hasDeleteHistory = true;
+  } catch (error) {
+    // No delete history, that's fine
+  }
+  
+  // First undo file deletions if they exist
+  if (hasDeleteHistory) {
+    try {
+      const deleteHistoryData = await fs.readFile(deleteHistoryPath, 'utf-8');
+      const deleteHistory: DeleteHistory = JSON.parse(deleteHistoryData);
+      
+      displayWarning('Undoing file deletions is not possible as we do not store file contents.');
+      displayInfo('However, we can remove the delete history record.');
+      
+      // Remove delete history file
+      await fs.rm(deleteHistoryPath);
+      await createLogEntry(folderPath, 'Removed delete history during undo process', '.tidyai/logs');
+    } catch (error) {
+      displayWarning(`Error processing delete history: ${(error as Error).message}`);
+    }
+  }
+  
+  // Then undo file organization
   try {
     const historyData = await fs.readFile(historyPath, 'utf-8');
     const history: OrganizationHistory = JSON.parse(historyData);
