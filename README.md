@@ -18,18 +18,14 @@
   <b>Organize your files with AI. Works everywhere. Powered by OpenRouter.</b>
 </p>
 
-<p align="center">
-  <img src="https://raw.githubusercontent.com/pawan67/tidyai-ts/main/doc/logo.png" alt="TidyAI Logo" width="200">
-</p>
-
 ```
-████████╗██╗██████╗ ██╗   ██╗ █████╗ ██╗     
-╚══██╔══╝██║██╔══██╗╚██╗ ██╔╝██╔══██╗██║     
-   ██║   ██║██║  ██║ ╚████╔╝ ███████║██║     
-   ██║   ██║██║  ██║  ╚██╔╝  ██╔══██║██║     
-   ██║   ██║██████╔╝   ██║   ██║  ██║██║     
-   ╚═╝   ╚═╝╚═════╝    ╚═╝   ╚═╝  ╚═╝╚═╝     
-                                             
+████████╗██╗██████╗ ██╗   ██╗ █████╗ ██╗
+╚══██╔══╝██║██╔══██╗╚██╗ ██╔╝██╔══██╗██║
+   ██║   ██║██║  ██║ ╚████╔╝ ███████║██║
+   ██║   ██║██║  ██║  ╚██╔╝  ██╔══██║██║
+   ██║   ██║██████╔╝   ██║   ██║  ██║██║
+   ╚═╝   ╚═╝╚═════╝    ╚═╝   ╚═╝  ╚═╝╚═╝
+
 ========================================
   Organize your files with AI power!
 ========================================
@@ -44,7 +40,7 @@ TidyAI-TS is a cross-platform CLI tool that uses AI to organize your messy folde
 - AI-powered folder suggestions using OpenRouter API
 - Smart file sorting based on file extensions and AI classification
 - Undo system to revert changes
-- Delete unnecessary files (thumbs.db, .DS_Store, *.tmp, *.log, desktop.ini)
+- Delete unnecessary files (thumbs.db, .DS*Store, *.tmp, \_.log, desktop.ini)
 - Cross-platform CLI (Windows, macOS, Linux)
 - Secure and private - only sends filenames to the AI, never file contents
 - Robust error handling with fallback to default suggestions
@@ -54,7 +50,6 @@ TidyAI-TS is a cross-platform CLI tool that uses AI to organize your messy folde
 - GitHub Actions for CI/CD and automatic releases
 
 ## 📦 Installation
-
 
 ### Option 1: Download Standalone Executables (Recommended)
 
@@ -108,17 +103,20 @@ npx . /path/to/folder
 ### Method 1: Permanent Environment Variable (Recommended)
 
 **Windows (PowerShell):**
+
 ```powershell
 # Set for current user (permanent)
 [Environment]::SetEnvironmentVariable("TIDYAI_API_KEY", "your_openrouter_api_key", "User")
 ```
 
 **Windows (Command Prompt as Administrator):**
+
 ```cmd
 setx TIDYAI_API_KEY "your_openrouter_api_key"
 ```
 
 **macOS/Linux:**
+
 ```bash
 # Add to your shell profile (~/.bashrc, ~/.zshrc, etc.)
 echo 'export TIDYAI_API_KEY=your_openrouter_api_key' >> ~/.bashrc
@@ -128,18 +126,21 @@ source ~/.bashrc
 ### Method 2: Temporary Environment Variable
 
 **Windows (Command Prompt):**
+
 ```cmd
 set TIDYAI_API_KEY=your_openrouter_api_key
 tidyai-win.exe C:\path\to\your\folder
 ```
 
 **Windows (PowerShell):**
+
 ```powershell
 $env:TIDYAI_API_KEY="your_openrouter_api_key"
 .\tidyai-win.exe C:\path\to\your\folder
 ```
 
 **macOS/Linux:**
+
 ```bash
 export TIDYAI_API_KEY=your_openrouter_api_key
 ./tidyai-macos /path/to/your/folder  # macOS
@@ -149,11 +150,13 @@ export TIDYAI_API_KEY=your_openrouter_api_key
 ### Method 3: Using the Provided Scripts
 
 Edit the `tidyai.bat` (Windows) or `tidyai.ps1` (PowerShell) file and uncomment the line with your API key:
+
 ```batch
 set TIDYAI_API_KEY=your_actual_api_key_here
 ```
 
 Then run:
+
 ```cmd
 tidyai.bat C:\path\to\your\folder
 ```
@@ -204,6 +207,7 @@ Environment Variables:
 Here's an example of how TidyAI organizes a messy folder:
 
 **Before:**
+
 ```
 messy-folder/
 ├── document.pdf
@@ -215,6 +219,7 @@ messy-folder/
 ```
 
 **After running `tidyai messy-folder`:**
+
 ```
 messy-folder/
 ├── Documents/
@@ -318,11 +323,13 @@ npm run package
 ```
 
 This will create the following executables:
+
 - Windows: `tidyai-win.exe`
 - macOS: `tidyai-macos`
 - Linux: `tidyai-linux`
 
 Alternatively, you can build individual platform executables using the npm scripts:
+
 ```bash
 npm run build:win    # Windows executable
 npm run build:linux  # Linux executable
